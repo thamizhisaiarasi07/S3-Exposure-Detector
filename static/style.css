@@ -1,0 +1,166 @@
+/*
+ * style.css
+ * Custom styles for S3 Exposure & Misconfiguration Detector Dashboard
+ */
+
+:root {
+    --primary-color: #0d6efd;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --success-color: #198754;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+}
+
+body {
+    background-color: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Stat Cards */
+.stat-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--hover-shadow);
+}
+
+.stat-icon {
+    font-size: 2.2rem;
+    opacity: 0.85;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* Custom Risk Badges */
+.badge-risk-high {
+    background-color: #dc3545;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.45em 0.75em;
+    border-radius: 6px;
+}
+
+.badge-risk-medium {
+    background-color: #fd7e14;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.45em 0.75em;
+    border-radius: 6px;
+}
+
+.badge-risk-low {
+    background-color: #198754;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.45em 0.75em;
+    border-radius: 6px;
+}
+
+/* Tables */
+.table-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    background-color: #ffffff;
+}
+
+.table thead th {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Main Scan Button */
+.btn-scan-main {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-scan-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(13, 110, 253, 0.35);
+}
+
+/* Bucket Details */
+.detail-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    background-color: #ffffff;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.detail-value {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+
+.recommendation-item {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.recommendation-item i {
+    color: #fd7e14;
+    margin-right: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+code.cmd-snippet {
+    background-color: #e2e8f0;
+    color: #0f172a;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+}

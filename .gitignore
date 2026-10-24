@@ -1,0 +1,51 @@
+# Python Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# Environment Variables and Credentials
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.aws/
+credentials
+*.pem
+*.key
+
+# SQLite Database and scan data runtime files
+*.db
+*.sqlite
+*.sqlite3
+s3_detector.db
+
+# Flask instance folder
+instance/
+
+# IDE and Editor configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and temporary files
+*.log
+scratch/

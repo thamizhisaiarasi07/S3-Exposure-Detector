@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if is_detail_view %}
+        Bucket Security Details - {{ selected_bucket.bucket_name }}
+    {% else %}
+        S3 Security Scan Results
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% if is_detail_view %}
+    <!-- BUCKET DETAILS VIEW -->
+    <div class="mb-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm mb-3">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold text-dark mb-1">
+                    <i class="bi bi-shield-shaded text-primary me-2"></i>Bucket: <span class="text-primary">{{ selected_bucket.bucket_name }}</span>
+                </h2>
+                <p class="text-muted mb-0 small">
+                    <i class="bi bi-clock me-1"></i>Last Scanned: {{ selected_bucket.scanned_at }}
+                </p>
+            </div>
+            <div class="mt-3 mt-md-0 d-flex align-items-center gap-2">
+                {% if selected_bucket.risk_level == 'HIGH' %}
+                    <span class="badge badge-risk-high fs-6">Risk Level: HIGH</span>
+                {% elif selected_bucket.risk_level == 'MEDIUM' %}
+                    <span class="badge badge-risk-medium fs-6">Risk Level: MEDIUM</span>
+                {% else %}
+                    <span class="badge badge-risk-low fs-6">Risk Level: LOW</span>
+                {% endif %}
+                <span class="badge bg-dark fs-6">Risk Score: {{ selected_bucket.risk_score }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Check Cards Grid -->
+    <div class="row g-3 mb-4">
+        <!-- 1. Public Access -->
+        <div class="col-md-4">
+            <div class="card detail-card h-100 p-3">
+                <div class="detail-label">1. Public Access Block</div>
+                <div class="detail-value mt-2">
+                    {% if selected_bucket.public_access == 'Blocked' %}
+                        <span class="text-success"><i class="bi bi-lock-fill me-1"></i>Blocked</span>
+                        <div class="small text-muted fw-normal mt-1">Public access is blocked.</div>
+                    {% elif selected_bucket.public_access == 'Enabled' %}
+                        <span class="text-danger"><i class="bi bi-unlock-fill me-1"></i>Enabled (Concern)</span>
+                        <div class="small text-danger fw-normal mt-1">Public access not fully blocked (+50 Risk)</div>
+                    {% else %}
+                        <span class="text-secondary">{{ selected_bucket.public_access }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Encryption -->
+        <div class="col-md-4">
+            <div class="card detail-card h-100 p-3">
+                <div class="detail-label">2. Server-Side Encryption</div>
+                <div class="detail-value mt-2">
+                    {% if selected_bucket.encryption == 'Enabled' %}
+                        <span class="text-success"><i class="bi bi-shield-lock-fill me-1"></i>Enabled</span>
+                        <div class="small text-muted fw-normal mt-1">Default encryption is configured.</div>
+                    {% elif selected_bucket.encryption == 'Disabled' %}
+                        <span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i>Disabled</span>
+                        <div class="small text-danger fw-normal mt-1">Data at rest is unencrypted (+20 Risk)</div>
+                    {% else %}
+                        <span class="text-secondary">{{ selected_bucket.encryption }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Versioning -->
+        <div class="col-md-4">
+            <div class="card detail-card h-100 p-3">
+                <div class="detail-label">3. Bucket Versioning</div>
+                <div class="detail-value mt-2">
+                    {% if selected_bucket.versioning == 'Enabled' %}
+                        <span class="text-success"><i class="bi bi-check-circle-fill me-1"></i>Enabled</span>
+                        <div class="small text-muted fw-normal mt-1">Object revisions are preserved.</div>
+                    {% elif selected_bucket.versioning == 'Disabled' %}
+                        <span class="text-warning"><i class="bi bi-dash-circle-fill me-1"></i>Disabled</span>
+                        <div class="small text-warning fw-normal mt-1">Versioning is inactive (+10 Risk)</div>
+                    {% else %}
+                        <span class="text-secondary">{{ selected_bucket.versioning }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations Box -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i class="bi bi-lightbulb-fill text-warning me-2"></i>Security Recommendations
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if recommendations %}
+                <ul class="list-unstyled mb-0">
+                    {% for rec in recommendations %}
+                        <li class="recommendation-item py-2 border-bottom">
+                            <i class="bi bi-arrow-right-circle-fill fs-5"></i>
+                            <div>
+                                <span class="fw-semibold text-dark">{{ rec }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-success mb-0 fw-semibold">
+                    <i class="bi bi-check2-circle me-1"></i>No security recommendations required. Bucket is secure.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+            <i class="bi bi-house me-1"></i>Dashboard
+        </a>
+        <a href="{{ url_for('history') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-clock-history me-1"></i>View History
+        </a>
+    </div>
+
+{% else %}
+    <!-- GENERAL SCAN RESULTS VIEW -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-clipboard2-data-fill text-primary me-2"></i>S3 Security Scan Results
+            </h2>
+            <p class="text-muted mb-0 small">Latest findings from Amazon S3 security configuration auditing.</p>
+        </div>
+        <form action="{{ url_for('run_scan') }}" method="POST">
+            <button type="submit" class="btn btn-primary btn-sm px-3 shadow-sm">
+                <i class="bi bi-arrow-repeat me-1"></i>Run New Scan
+            </button>
+        </form>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card stat-card bg-white p-3">
+                <div class="text-muted small text-uppercase fw-semibold">Total Scanned</div>
+                <div class="stat-value text-primary mt-1">{{ stats.total_buckets }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card stat-card bg-white p-3">
+                <div class="text-muted small text-uppercase fw-semibold">High Risk</div>
+                <div class="stat-value text-danger mt-1">{{ stats.high_risk }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card stat-card bg-white p-3">
+                <div class="text-muted small text-uppercase fw-semibold">Medium Risk</div>
+                <div class="stat-value text-warning mt-1">{{ stats.medium_risk }}</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="card stat-card bg-white p-3">
+                <div class="text-muted small text-uppercase fw-semibold">Low Risk</div>
+                <div class="stat-value text-success mt-1">{{ stats.low_risk }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Table -->
+    <div class="card table-card shadow-sm mb-4">
+        <div class="card-body p-0">
+            {% if buckets %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Bucket Name</th>
+                                <th>Public Access</th>
+                                <th>Encryption</th>
+                                <th>Versioning</th>
+                                <th>Risk Score</th>
+                                <th>Risk Level</th>
+                                <th>Scan Time</th>
+                                <th class="text-end pe-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for b in buckets %}
+                                <tr>
+                                    <td class="ps-3 fw-bold text-dark">
+                                        <i class="bi bi-bucket text-primary me-1"></i>{{ b.bucket_name }}
+                                    </td>
+                                    <td>
+                                        {% if b.public_access == 'Blocked' %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">Blocked</span>
+                                        {% elif b.public_access == 'Enabled' %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Enabled (Concern)</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary">{{ b.public_access }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if b.encryption == 'Enabled' %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">Enabled</span>
+                                        {% elif b.encryption == 'Disabled' %}
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Disabled</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary">{{ b.encryption }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if b.versioning == 'Enabled' %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle">Enabled</span>
+                                        {% elif b.versioning == 'Disabled' %}
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Disabled</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary">{{ b.versioning }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ b.risk_score }}</strong></td>
+                                    <td>
+                                        {% if b.risk_level == 'HIGH' %}
+                                            <span class="badge badge-risk-high">HIGH</span>
+                                        {% elif b.risk_level == 'MEDIUM' %}
+                                            <span class="badge badge-risk-medium">MEDIUM</span>
+                                        {% else %}
+                                            <span class="badge badge-risk-low">LOW</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted small">{{ b.scanned_at }}</td>
+                                    <td class="text-end pe-3">
+                                        <a href="{{ url_for('bucket_detail', bucket_name=b.bucket_name) }}" class="btn btn-sm btn-outline-primary">
+                                            View Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="p-5 text-center">
+                    <p class="lead text-muted mb-3">No scan results to display.</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">Go to Dashboard</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}
